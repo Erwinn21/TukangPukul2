@@ -20,6 +20,8 @@ class InformationWidget : AppWidgetProvider() {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray
     ) {
+        //proses pencatatan id
+
         if(myPref == null) {
             myPref = WidgetPref(context)
         }
@@ -28,24 +30,32 @@ class InformationWidget : AppWidgetProvider() {
 
         // There may be multiple widgets active, so update all of them
         for (appWidgetId in appWidgetIds) {
+            //semua id widget yang dibentuk akan disimpan ke dalam shared preferences
             ids?.add(appWidgetId.toString())
             updateAppWidget(context, appWidgetManager, appWidgetId)
         }
+
+        //kirimkan semua id ke dalam shared preferences jika ada
         if(ids != null)
             myPref?.setId(ids)
     }
 
+    //data yang ditampilkan saat pertama kali dijalankan
     override fun onEnabled(context: Context) {
+        //intentAlarm mengirimkan broadcast ke information widget untuk diambil onReceiver
         var intentAlarm = Intent(context, InformationWidget::class.java).let {
             it.action = ACTION_AUTO_UPDATE
             PendingIntent.getBroadcast(context, 101, it, PendingIntent.FLAG_UPDATE_CURRENT)
         }
+
+        //tentukan interval waktu setiap kapan data di-update
         var cal = Calendar.getInstance()
         cal.add(Calendar.SECOND, 5)
         var alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmManager.setRepeating(AlarmManager.RTC, cal.timeInMillis,5000L,intentAlarm)
     }
 
+    //saat widget di-remove
     override fun onDisabled(context: Context) {
         var intentAlarm = Intent (context, InformationWidget::class.java).let {
             it.action = ACTION_AUTO_UPDATE
@@ -53,15 +63,19 @@ class InformationWidget : AppWidgetProvider() {
         }
         var alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
+        //cancel intentAlarm yang sedang dijalankan
         alarmManager.cancel(intentAlarm)
     }
 
     override fun onReceive(context : Context?, intent : Intent?) {
         // Enter relevant functionality for when the last widget is disabled
         if(intent?.action!!.equals(ACTION_AUTO_UPDATE)){
+            //ambil semua id yang ada di shared preferences
             if (myPref == null)
                 myPref = WidgetPref (context!!)
+
             for (ids in myPref?.getId()!!) {
+                //widget akan diupdate tiap 5 detik dengan pesan yang sudah ditentukan
                 updateAppWidget(context!!, AppWidgetManager.getInstance(context), ids.toInt() )
             }
         }
@@ -72,6 +86,7 @@ class InformationWidget : AppWidgetProvider() {
         var menu = DataInformation()
         //mendeklarasi sebuah permission untuk meng-update widget
         var ACTION_AUTO_UPDATE = "android.appwidget.action.APPWIDGET_UPDATE"
+        //fungsi untuk meng-update text yang ada di widget
         internal fun updateAppWidget(
             context: Context,
             appWidgetManager: AppWidgetManager,
