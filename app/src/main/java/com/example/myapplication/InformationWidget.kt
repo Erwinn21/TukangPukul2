@@ -14,12 +14,13 @@ import java.util.*
  */
 class InformationWidget : AppWidgetProvider() {
     private var myPref :WidgetPref? = null
+    //perintah yang dijalankan secara otomatis dari updatePeriodMillis pada xml info
     override fun onUpdate(
         context: Context,
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray
     ) {
-        if(myPref == null){
+        if(myPref == null) {
             myPref = WidgetPref(context)
         }
         var ids = myPref?.getId()
@@ -66,13 +67,17 @@ class InformationWidget : AppWidgetProvider() {
         super.onReceive(context, intent)
     }
     companion object {
+        //mendeklarasi class DataInformation
         var menu = DataInformation()
+        //mendeklarasi sebuah permission untuk meng-update widget
         var ACTION_AUTO_UPDATE = "android.appwidget.action.APPWIDGET_UPDATE"
         internal fun updateAppWidget(
             context: Context,
             appWidgetManager: AppWidgetManager,
             appWidgetId: Int
         ) {
+            //textview yang ada di widget akan menampilkan
+            //data dari fungsi getMenu
             val widgetText = menu.getMenu()
             // Construct the RemoteViews object
             val views = RemoteViews(context.packageName, R.layout.information_widget)
