@@ -9,6 +9,9 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
@@ -18,6 +21,15 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        //inisialisasi ads
+        MobileAds.initialize(this) {}
+        //iklan akan diload
+        adView.loadAd(AdRequest.Builder().build())
+
+        /*adView.adListener = object : AdListener(){
+
+        }*/
 
         var intentAlarm = Intent (this, InformationWidget::class.java).let {
             it.action = InformationWidget.ACTION_AUTO_UPDATE
