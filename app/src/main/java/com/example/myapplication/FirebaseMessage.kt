@@ -38,12 +38,17 @@ class FirebaseMessage : FirebaseMessagingService() {
             //membuat notification channel
             notifManager.createNotificationChannel(notifChannel)
         }
+        //mengimplementasikan NotificationCompat dengan channel id notif1 untuk menampilkan isi pesan ke notifikasi
         var notifyNotif = NotificationCompat.Builder(
             this, "notif1", ).apply {
             setDefaults(Notification.DEFAULT_ALL)
+            //menampilkan notifikasi secara real time
             setWhen(System.currentTimeMillis())
+            //menampilkan icon kecil pada taskbar notifikasi
             setSmallIcon(R.mipmap.ic_launcher)
+            //menampilkan title notifikasi
             setContentTitle(title)
+            //menampilkan isi text/body dari notifikasi
             setContentText(message)
             setContentInfo("Information")
         }
