@@ -9,6 +9,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
@@ -26,6 +27,11 @@ class MainActivity : AppCompatActivity() {
         MobileAds.initialize(this) {}
         //iklan akan diload
         adView.loadAd(AdRequest.Builder().build())
+
+
+        closeAd.setOnClickListener {
+            adView.destroy()
+        }
 
         /*adView.adListener = object : AdListener(){
 
