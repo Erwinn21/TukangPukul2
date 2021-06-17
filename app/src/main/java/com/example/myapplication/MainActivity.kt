@@ -10,13 +10,18 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
+    private var interAds : InterstitialAd? = null
     private lateinit var mySharedPref: sizeSharedPref
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,14 +33,30 @@ class MainActivity : AppCompatActivity() {
         //iklan akan diload
         adView.loadAd(AdRequest.Builder().build())
 
-
+        //menutup ads secara sementara
         closeAd.setOnClickListener {
             adView.destroy()
         }
 
-        /*adView.adListener = object : AdListener(){
-
-        }*/
+        //membuat button signUp menjadi invisible
+        signUp.visibility = View.GONE
+        //load adMob dan build add tersebut
+        InterstitialAd.load(this, "ca-app-pub-3940256099942544/1033173712", AdRequest.Builder().build(),
+            object : InterstitialAdLoadCallback() {
+                //jika load tersebut fail maka akan menjalankan function ini
+                override fun onAdFailedToLoad(p0: LoadAdError) {
+                    //jika load failed maka akan muncul popup "Load Failed"
+                    Toast.makeText(this@MainActivity, "Load Failed", Toast.LENGTH_SHORT).show()
+                }
+                //jika load berhasil maka akan menjalankan InterstitialAd
+                //dan membuat button signUp menjadi visible
+                override fun onAdLoaded(p0: InterstitialAd) {
+                    super.onAdLoaded(p0)
+                    interAds = p0
+                    signUp.visibility = View.VISIBLE
+                }
+            }
+        )
 
         var intentAlarm = Intent (this, InformationWidget::class.java).let {
             it.action = InformationWidget.ACTION_AUTO_UPDATE
@@ -68,5 +89,15 @@ class MainActivity : AppCompatActivity() {
         val updateIntent = Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
         updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
         sendBroadcast(updateIntent)
+    }
+
+    //jika tombol signUp telah di klik maka function ini akan dijalankan
+    fun showInterstitial(view: View) {
+        //jika interAds memiliki data maka iklan akan ditampilkan sesudah kembali dari activity SignUp
+        if(interAds != null) {
+            interAds?.show(this)
+            val mySignUp = Intent(this@MainActivity, SignUp::class.java)
+            startActivity(mySignUp)
+        }
     }
 }
